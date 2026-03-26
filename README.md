@@ -15,7 +15,7 @@ This workflow solves that by automating the full enrichment + scoring flow with 
 ## High-level design flow
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Chat Trigger] --> B[AI Agent Main Orchestrator]
     B --> C[Search Agent]
     C --> D[Google Sheet Agent]
