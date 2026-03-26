@@ -1,0 +1,722 @@
+{
+  "name": "Workflow - Qualification Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Samvad. How can I assist you today?",
+        "availableInChat": true,
+        "agentName": "Samvad",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -624,
+        16
+      ],
+      "id": "09c959f7-eb2f-4d9d-b303-f3a8d40ebfee",
+      "name": "When chat message received",
+      "webhookId": "2430c680-c2d2-4012-8681-b7ba2858dd07"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -432,
+        240
+      ],
+      "id": "dfbbe5ce-fa5f-415e-90d2-2a91299b685e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "lnglVCB5I6Alp9y5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        240
+      ],
+      "id": "87d98579-9e93-452d-984a-9e7e02eaf837",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 300
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        448
+      ],
+      "id": "25651e38-adda-4ba8-9911-6ea45bdc1e03",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "lnglVCB5I6Alp9y5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c",
+          "mode": "list",
+          "cachedResultName": "Maven Week 3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $fromAI('name', ``, 'string') }}",
+            "linkedin": "={{ $fromAI('linkedin', ``, 'string') }}",
+            "description": "={{ $fromAI('description', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin",
+              "displayName": "linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "reasoning",
+              "displayName": "reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -112,
+        528
+      ],
+      "id": "d73fb2b0-7013-43e1-a21f-97b1ded15a6e",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vLCjcjsoLQHY9v6X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 300
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        448
+      ],
+      "id": "370b7a10-5704-466c-8d2f-b4495f14f916",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "lnglVCB5I6Alp9y5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Saves lead data to Google Sheets. Expects JSON input with name, linkedin, and description fields.",
+        "text": "={{ $fromAI('lead_data', 'JSON object with name, linkedin, and description fields', 'string') }}",
+        "options": {
+          "systemMessage": "You are a Google Sheets data manager. Follow this EXACT process:\n\n1. Parse the input JSON to extract name, linkedin, and description\n2. Use \"Search for existing record\" tool to check if a record with this name already exists\n3. IF RECORD EXISTS (search returns data with row_number):\n   - Extract the row_number from the search result\n   - Use \"Update existing record\" tool with the row_number, name, linkedin, and description\n   - Return JSON: {\"name\": \"exact name\", \"linkedin\": \"url\", \"description\": \"text\", \"row_number\": <number>, \"saved\": true, \"action\": \"updated\"}\n4. IF RECORD DOES NOT EXIST (search returns empty or no row_number):\n   - Use \"Append row in sheet in Google Sheets\" tool to create new row with name, linkedin, and description\n   - Immediately after appending, use \"Get row count after append\" tool to get the total number of rows\n   - The row_number of the newly appended row = total row count (because the new row is the last row)\n   - Return JSON: {\"name\": \"exact name\", \"linkedin\": \"url\", \"description\": \"text\", \"row_number\": <total row count>, \"saved\": true, \"action\": \"created\"}\n\nCRITICAL: \n- After appending a new row, ALWAYS call \"Get row count after append\" to determine the correct row_number\n- The row_number must be accurate because the Scoring Agent uses it to update the score and reasoning columns\n- Row 1 is the header row, so data rows start at row 2"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        -96,
+        256
+      ],
+      "id": "e8729bed-8748-4e26-861a-71cfbbb5bd63",
+      "name": "Google Sheet Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Searches for lead information and returns structured JSON with name, linkedin, and description fields. Call this tool first to gather lead data.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a search specialist. Research the lead and return ONLY valid JSON with these exact fields:\n{\n  \"name\": \"full name\",\n  \"linkedin\": \"LinkedIn URL or empty string\",\n  \"description\": \"brief professional description\"\n}\n\nReturn ONLY the JSON object, nothing else.",
+          "maxIterations": 2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        544,
+        256
+      ],
+      "id": "ae41a31c-a883-4fa2-b7c5-a5cc6a320737",
+      "name": "Search Agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a Lead Enrichment Orchestrator. Follow this STRICT SEQUENTIAL process:\n\n1. FIRST: Call Search_Agent to get lead information (returns JSON with name, linkedin, description)\n2. SECOND: Call Google_Sheet_Agent with the EXACT JSON output from Search_Agent (it will return the same data PLUS row_number)\n3. THIRD: Call Scoring_Agent with the EXACT JSON output from Google_Sheet_Agent (which now includes row_number)\n4. FINALLY: Return a summary to the user\n\nCRITICAL DATA FLOW: Search_Agent JSON → Google_Sheet_Agent → Google_Sheet_Agent JSON (with row_number) → Scoring_Agent. The row_number from Google_Sheet_Agent tells Scoring_Agent exactly which row to update."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        16
+      ],
+      "id": "1883d9ee-7f3a-4567-9ffc-0f01f2c8c868",
+      "name": "AI Agent [Main]"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 300
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        480
+      ],
+      "id": "0a2fdba7-8845-456e-90a0-6ea5008a24fb",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "lnglVCB5I6Alp9y5",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Scores a lead from 0-100 based on professional credibility and updates the score in Google Sheets. Expects JSON input with name, linkedin, and description.",
+        "text": "={{ $fromAI('lead_data', 'JSON object with name, linkedin, and description fields to score', 'string') }}",
+        "options": {
+          "systemMessage": "You are a lead scoring specialist. Follow this EXACT process:\n\n1. Parse the input JSON to extract name, linkedin, description, and row_number\n2. Score the lead 0-100 based on professional credibility and seniority\n3. Classify as: 80+ = Hot, 60-79 = Warm, below 60 = Cold\n4. Call 'Update latest row by row number' tool with these exact parameters:\n   - row_number: Use the row_number value from the input JSON\n   - score: Format as 'Classification (Score)' like 'Hot (95)'\n   - reasoning: Your detailed reasoning for the score\n5. Return confirmation with the score, classification, and reasoning\n\nCRITICAL: The row_number is provided in the input JSON. Extract it and pass it to the update tool exactly as received. Do NOT modify or search for the row number."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        1040,
+        240
+      ],
+      "id": "7c950052-d985-4fba-9d45-b9d6a97eaed7",
+      "name": "Scoring Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Updates the score and reasoning columns for a specific row in Google Sheets. Requires row_number (the exact row to update), score (formatted as Classification (Score)), and reasoning (detailed explanation).",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c",
+          "mode": "list",
+          "cachedResultName": "Maven Week 3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "score": "={{ $fromAI('score', 'Score formatted as Classification (Score) like Hot (95)', 'string') }}",
+            "reasoning": "={{ $fromAI('reasoning', 'Detailed reasoning for the score', 'string') }}",
+            "row_number": "={{ $fromAI('row_number', 'The exact row number from the Google Sheet Agent output', 'number') }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reasoning",
+              "displayName": "reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b6b9c352-e67e-4735-ae4d-363259f667d4",
+      "name": "Update latest row by row number",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1184,
+        480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vLCjcjsoLQHY9v6X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c",
+          "cachedResultName": "Maven Week 3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "name",
+              "lookupValue": "={{ $fromAI('name', 'Name to search for', 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e9d26ebc-1dde-4ec7-b9ec-ef0deee616d5",
+      "name": "Search for existing record",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vLCjcjsoLQHY9v6X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c",
+          "cachedResultName": "Maven Week 3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $fromAI('row_number', 'Row number to update', 'number') }}",
+            "name": "={{ $fromAI('name', 'Name', 'string') }}",
+            "linkedin": "={{ $fromAI('linkedin', 'LinkedIn URL', 'string') }}",
+            "description": "={{ $fromAI('description', 'Description', 'string') }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "linkedin",
+              "displayName": "linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0ded9644-e873-4de9-9a54-3435ab957ff4",
+      "name": "Update existing record",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vLCjcjsoLQHY9v6X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Returns the total number of rows in the sheet including the header. Use this after appending a row to determine the row_number of the newly created row.",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1GYVk5JXgKJZxGMunDEqBw8wSazJWmfjgWkGW4oJdS7c"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "options": {}
+      },
+      "id": "737fd38d-36b2-4d82-a67f-f2267c26723b",
+      "name": "Get row count after append",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vLCjcjsoLQHY9v6X",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent [Main]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent [Main]",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent [Main]",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Search Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Sheet Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Google Sheet Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheet Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent [Main]",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent [Main]",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Scoring Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scoring Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent [Main]",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update latest row by row number": {
+      "ai_tool": [
+        [
+          {
+            "node": "Scoring Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search for existing record": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Sheet Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update existing record": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Sheet Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row count after append": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Sheet Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "87684807-086e-4d07-a81c-3625b792b6d7",
+  "meta": {
+    "instanceId": "1b2a738e972450e0b71532762400b4162a40cac0906d80702f9e6160e9806e35"
+  },
+  "id": "wVxuQku7UAvfb4zo",
+  "tags": []
+}
