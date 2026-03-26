@@ -4,92 +4,82 @@ This repository contains n8n learning workflows and assignments from the Maven A
 
 ## What this repository is about
 
-`workflow-qualification-agent.json` defines a multi-agent lead qualification pipeline in n8n.  
-It accepts a chat prompt, gathers lead details, stores or updates lead data in Google Sheets, scores the lead, and writes back the score plus reasoning.
+`workflowqualificationagent.json` exports an n8n workflow named **Workflow - Qualification Agent**. It is a multi-agent lead qualification pipeline: a public chat UI (**Samvad**) receives messages, researches a lead, upserts row data in Google Sheets, scores the lead (0–100 with Hot / Warm / Cold), and writes **score** and **reasoning** back to the matching sheet row.
 
 ## Problem being solved
 
-Manually researching leads, recording details, and assigning qualification scores is repetitive and inconsistent.  
-This workflow solves that by automating the full enrichment + scoring flow with clear orchestration and structured outputs, so lead tracking is faster and more reliable.
+Researching leads, capturing structured fields in a spreadsheet, and scoring them consistently is slow and error-prone when done manually. This workflow automates **enrichment → persistence → scoring** with a fixed handoff (especially **`row_number`**) so updates land on the correct row and the team gets a repeatable qualification pipeline.
 
 ## High-level design flow
 
 ```mermaid
 flowchart TD
-    A[Chat Trigger] --> B[AI Agent Main Orchestrator]
+    A[When chat message received] --> B[AI Agent Main]
     M[Simple Memory] --> B
-    L1[Main LLM] --> B
+    L1[OpenAI Chat Model] --> B
 
     B --> C[Search Agent]
-    L2[Search LLM] --> C
-    C --> D[Lead JSON: name/linkedin/description]
+    L2[OpenAI Chat Model1] --> C
+    C --> D[Lead fields: name / linkedin / description]
 
     D --> E[Google Sheet Agent]
-    L3[Sheets LLM] --> E
-    E --> F{Existing name found?}
+    L3[OpenAI Chat Model2] --> E
+    E --> F{Existing name in sheet?}
     F -->|Yes| G[Update existing record]
-    F -->|No| H[Append new row]
-    H --> I[Get row count]
-    G --> J[Lead JSON + row_number]
+    F -->|No| H[Append row in sheet]
+    H --> I[Get row count after append]
+    G --> J[Payload + row_number]
     I --> J
 
     J --> K[Scoring Agent]
-    L4[Scoring LLM] --> K
-    K --> N[Update score and reasoning by row_number]
-    N --> O[User summary response]
-
-    P[Format Error Message node]:::optional
-
-    classDef optional stroke-dasharray: 5 5
+    L4[OpenAI Chat Model3] --> K
+    K --> N[Update latest row by row_number]
+    N --> O[User summary in chat]
 ```
 
 ## Brief design overview
 
-- **Main orchestrator + memory:** The main AI agent handles chat requests with a 10-message memory window and enforces the sequence Search -> Sheet upsert -> Scoring.
-- **Specialized agents:** Search, Google Sheet, and Scoring each run with a dedicated LLM node to keep responsibilities isolated.
-- **Sheet upsert logic:** The Google Sheet agent first checks for an existing name, updates if found, or appends if new.
-- **Deterministic row targeting:** For new entries, row count is fetched right after append to derive `row_number`, which is passed forward.
-- **Scoring write-back:** The Scoring agent computes Hot/Warm/Cold with score and reasoning, then updates the exact sheet row using `row_number`.
-- **Error UX preparedness:** A `Format Error Message` node exists to standardize user-facing error text.
+- **Entry:** LangChain **Chat Trigger** (public chat, agent display name **Samvad**) forwards user turns to **AI Agent [Main]**.
+- **Orchestration:** The main agent’s system prompt enforces **Search Agent → Google Sheet Agent → Scoring Agent**, then a short user-facing summary.
+- **Models:** Each agent uses its own **OpenAI Chat Model** node; the export is configured for **`gpt-4o-mini`** (re-bind or change model IDs after import if your n8n instance differs).
+- **Memory:** **Simple Memory** (`contextWindowLength: 10`) is attached only to the main agent for conversational continuity.
+- **Search Agent:** Up to **3** tool iterations; returns structured **name**, **linkedin**, **description** for downstream steps.
+- **Google Sheet Agent:** Searches by **name**, then either **updates** an existing row or **appends** a new one; after append it uses **Get row count after append** so **`row_number`** matches the new data row (row 1 is treated as header in the agent instructions).
+- **Scoring Agent:** Scores 0–100, maps to Hot (80+), Warm (60–79), Cold (under 60), formats **classification (score)** for the sheet, and calls **Update latest row by row number** using the **`row_number`** from the sheet agent output—no separate row lookup in the scoring step.
+- **Persistence:** Sheet tools target the spreadsheet referenced in the JSON (**Maven Week 3** / **Sheet1** in the export); replace with your own document and sheet after import.
 
 ## Project files
 
-- `workflow-qualification-agent.json`: Main n8n workflow export file.
-- `workflow-screenshots/qualificationAgent-workflow.png`: Visual snapshot of the workflow canvas.
-- `.gitignore`: Ignore rules for local/system and environment artifacts.
+- `workflowqualificationagent.json`: n8n workflow export (**Workflow - Qualification Agent**).
+- `workflow-screenshots/`: Canvas screenshots (e.g. `Screenshot 2026-03-26 at 7.00.55 PM.png`).
+- `.gitignore`: Local, editor, and environment noise (including `.env` patterns).
 
 ## Node mapping
 
 | Node name | Purpose |
 | --- | --- |
-| `When chat message received` | Entry point that receives user chat input and starts orchestration. |
-| `AI Agent [Main]` | Central orchestrator that enforces Search -> Sheet upsert -> Scoring sequence. |
-| `OpenAI Chat Model` | Language model used by the main orchestrator. |
-| `Simple Memory` | Maintains short conversation context (`contextWindowLength: 10`). |
-| `Search Agent` | Researches lead details and returns structured JSON. |
-| `OpenAI Chat Model1` | Language model used by the Search Agent. |
-| `Google Sheet Agent` | Upserts lead data and ensures `row_number` is available. |
-| `OpenAI Chat Model2` | Language model used by the Google Sheet Agent. |
-| `Search for existing record` | Checks if a lead already exists by name in the sheet. |
-| `Update existing record` | Updates existing row fields (`name`, `linkedin`, `description`). |
-| `Append row in sheet in Google Sheets` | Appends a new lead record when no match exists. |
-| `Get row count after append` | Retrieves total rows to derive the new row number. |
-| `Scoring Agent` | Scores lead (Hot/Warm/Cold), generates reasoning, and triggers write-back. |
-| `OpenAI Chat Model3` | Language model used by the Scoring Agent. |
-| `Update latest row by row number` | Writes score and reasoning to the exact row identified by `row_number`. |
-| `Format Error Message` | Formats a user-friendly error output when processing fails. |
+| `When chat message received` | Chat trigger; starts the main agent on each user message. |
+| `AI Agent [Main]` | Lead enrichment orchestrator; strict tool order Search → Sheet → Scoring. |
+| `OpenAI Chat Model` | LLM for the main agent (`gpt-4o-mini` in export). |
+| `Simple Memory` | Conversation buffer (10 messages) for the main agent. |
+| `Search Agent` | Sub-agent tool; researches lead → structured name / linkedin / description. |
+| `OpenAI Chat Model1` | LLM for Search Agent. |
+| `Google Sheet Agent` | Sub-agent tool; upsert + returns payload including **`row_number`**. |
+| `OpenAI Chat Model2` | LLM for Google Sheet Agent. |
+| `Search for existing record` | Sheet tool: lookup by **name** column. |
+| `Update existing record` | Sheet tool: update **name**, **linkedin**, **description** by **`row_number`**. |
+| `Append row in sheet in Google Sheets` | Sheet tool: append new lead row (score/reasoning columns omitted from append mapping). |
+| `Get row count after append` | Sheet tool: total rows (used to infer new row’s **`row_number`**). |
+| `Scoring Agent` | Sub-agent tool; scores lead and drives score/reasoning write-back. |
+| `OpenAI Chat Model3` | LLM for Scoring Agent. |
+| `Update latest row by row number` | Sheet tool: writes **score** and **reasoning** matched on **`row_number`**. |
 
 ## How to import and run in n8n
 
 1. Open your n8n instance.
-2. Create a new workflow and choose **Import from file**.
-3. Select `workflow-qualification-agent.json` from this repository.
-4. Open each node that requires credentials and connect:
-   - OpenAI credentials for the Chat Model nodes.
-   - Google Sheets OAuth2 credentials for Google Sheets tool nodes.
-5. Verify that the Google Sheet document and sheet references match your target sheet.
-6. Save the workflow and click **Execute workflow** (for testing) or **Activate** (for live use).
-7. Start from the chat trigger endpoint/UI and send a lead query message.
-8. Confirm results in Google Sheets:
-   - Lead data is created/updated (`name`, `linkedin`, `description`)
-   - Score and reasoning are written to the correct row.
+2. **Import from file** and choose `workflowqualificationagent.json`.
+3. Re-apply **credentials** on every **OpenAI** and **Google Sheets** node (imports only carry credential names/IDs from the source instance).
+4. Point **documentId** / **sheetName** on all Sheet nodes at **your** spreadsheet and tab; align column headers with **name**, **linkedin**, **description**, **score**, **reasoning**, and **`row_number`** if your sheet uses that column for updates.
+5. Confirm each **OpenAI Chat Model** uses a model available on your account (export uses **`gpt-4o-mini`**).
+6. Save, **Execute** for a test run, or **Activate** for production; use the **chat** entry point and ask about a lead.
+7. In Google Sheets, verify: lead fields updated or appended, then **score** / **reasoning** on the same **`row_number`**.
